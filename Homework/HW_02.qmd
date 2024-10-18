@@ -178,6 +178,8 @@ __1. For each numerical variable in the merged dataset, plot a histogram showing
 (Hint: write a function to make the histogram for a single variable, then use a loop or apply function to make the histograms for all numerical variables.)__
 
 ```{python}
+
+import matplotlib.pyplot as plt
 # Function to plot a histogram for a single variable
 def plot_histogram(column):
     plt.figure(figsize=(8, 6))
