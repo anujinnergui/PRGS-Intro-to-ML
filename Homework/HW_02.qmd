@@ -7,7 +7,7 @@ __Due Date:__ 2022-10-16 at 8:30 AM PT
 ---
 
 
-__Name:__ \<Anujin Nergui\>
+__Name:__ Anujin Nergui 
 
 
 
@@ -25,34 +25,67 @@ For this assignment, you will practice downloadings, cleaning, and analyzing dat
 
 __1. Import the NRI data. Ensure that the [FIPS code](https://en.wikipedia.org/wiki/Federal_Information_Processing_Standard_state_code) variable ('STCOFIPS') is correctly identified as a string / character variable. Otherwise, the leading zeros will be removed.__
 
-```
-{python}
+```{python}
 import pandas as pd
+nri_data_path = r'C:\Users\anergui\OneDrive - RAND Corporation\Fall 2024\Intro to ML\Code\PRGS-Intro-to-ML\data\raw\NRI_Table_Counties.csv'  
 
-#Load the NRI data
-nri_data = pd.read_csv('data/raw/NRI_Table_Counties.csv', dtype={'STCOFIPS': str})
+# Load the CSV data and ensure 'STCOFIPS' is read as a string
+nri_df = pd.read_csv(nri_data_path, dtype={'STCOFIPS': str})
 
-# Display the first few rows of the data
-print(nri_data.head())
-
+# Preview the data to confirm it's loaded properly
+print(nri_df.head()) 
 ```
 
 __2. Subset the NRI data to include only the 5-digit state/county FIPS code and all colums ending with '\_AFREQ' and '\_RISKR'. Each of these columns represents a different hazard type.__
 
-```
-# your code here
+```{python}
+# Combine the selected columns and include 'STCOFIPS'
+subset_columns = ['STCOFIPS'] + [col for col in nri_df.columns if col.endswith('_AFREQ') or col.endswith('_RISKR')] 
+# Subset the dataframe
+nri_subset = nri_df[subset_columns]
+
+# Preview the subsetted data
+print(nri_subset.head())
 ```
 __3. Create a table / dataframe that, for each hazard type, shows the number of missing values in the '\_AFREQ' and '\_RISKR' columns.__
-```
-# your code here
+```{python}
+# Calculate the number of missing values
+missing_values = nri_subset.isnull().sum()
+
+# Filter for '_AFREQ' and '_RISKR' columns
+missing_values_filtered = missing_values[missing_values.index.str.endswith('_AFREQ') | missing_values.index.str.endswith('_RISKR')]
+
+# Create a DataFrame
+missing_values_df = missing_values_filtered.reset_index()
+missing_values_df.columns = ['Hazard_Type', 'Missing_Values']
+
+# Display the table
+print(missing_values_df)
 ```
 __4. Create a new column in the original data table indicating whether or not 'AVLN_AFREQ' is missing or observed. Show the cross-tabulation of the 'AVLN_AFREQ' missingness and 'AVLN_RISKR' columns (including missing values). What do you observe?__
+```{python}
+# Create a new column for AVLN_AFREQ missingness
+nri_df['AVLN_AFREQ_Missing'] = nri_df['AVLN_AFREQ'].isnull()
+
+# Cross-tabulation of AVLN_AFREQ missingness and AVLN_RISKR
+cross_tab = pd.crosstab(nri_df['AVLN_AFREQ_Missing'], nri_df['AVLN_RISKR'], dropna=False)
+
+# Display the cross-tabulation
+print(cross_tab)
 ```
-# your code here
-```
+
+We observe that when fequency increases risk level decreases.
+
 __5. Assuming that a risk that is "not applicable" to a county has an annualized frequency of 0, impute the relevant missing values in the '\_AFREQ' columns with 0.__
-```
-# your code here
+```{python}
+# Identify '_AFREQ' columns
+afreq_columns = [col for col in nri_df.columns if col.endswith('_AFREQ')]
+
+# Impute missing values with 0
+nri_df[afreq_columns] = nri_df[afreq_columns].fillna(0)
+
+# Verify the changes
+print(nri_df[afreq_columns].head())
 ```
 
 
@@ -61,29 +94,82 @@ __5. Assuming that a risk that is "not applicable" to a county has an annualized
 __1. Import the SVI data. Ensure that the FIPS code is correctly identified as a string / character variable. Otherwise, the leading zeros will be removed.__
 __1. Subset the SVI data to include only the following columns:__
 `ST, STATE, ST_ABBR, STCNTY, COUNTY, FIPS, LOCATION, AREA_SQMI, E_TOTPOP, EP_POV150, EP_UNEMP, EP_HBURD, EP_NOHSDP, EP_UNINSUR, EP_AGE65, EP_AGE17, EP_DISABL, EP_SNGPNT, EP_LIMENG, EP_MINRTY, EP_MUNIT, EP_MOBILE, EP_CROWD, EP_NOVEH, EP_GROUPQ, EP_NOINT, EP_AFAM, EP_HISP, EP_ASIAN, EP_AIAN, EP_NHPI, EP_TWOMORE, EP_OTHERRACE`
+```{python}
+
+svi_path = r'C:\Users\anergui\OneDrive - RAND Corporation\Fall 2024\Intro to ML\Code\PRGS-Intro-to-ML\data\raw\SVI_2022_US_county.csv'
+# Load the SVI data
+
+svi_df = pd.read_csv(svi_path, dtype={'FIPS': str})
+
+# Step 2: Subset the SVI data to include the required columns
+required_columns = [
+    'ST', 'STATE', 'ST_ABBR', 'STCNTY', 'COUNTY', 'FIPS', 'LOCATION', 'AREA_SQMI',
+    'E_TOTPOP', 'EP_POV150', 'EP_UNEMP', 'EP_HBURD', 'EP_NOHSDP', 'EP_UNINSUR', 'EP_AGE65',
+    'EP_AGE17', 'EP_DISABL', 'EP_SNGPNT', 'EP_LIMENG', 'EP_MINRTY', 'EP_MUNIT', 'EP_MOBILE',
+    'EP_CROWD', 'EP_NOVEH', 'EP_GROUPQ', 'EP_NOINT', 'EP_AFAM', 'EP_HISP', 'EP_ASIAN',
+    'EP_AIAN', 'EP_NHPI', 'EP_TWOMORE', 'EP_OTHERRACE'
+]
+
+# Subset the dataframe
+svi_subset = svi_df[required_columns] 
+
+# Display the first few rows of the subset
+print(svi_subset.head())
 ```
-# your code here
-```
+
+
 __2. Create a table / dataframe that shows the number of missing values in each column.
 (Hint: if you wrote a function for Task 1, you can reuse it here.)__
 
-```
-# your code here
+```{python}
+# Calculate the number of missing values
+missing_values = svi_subset.isnull().sum()
+
+# Create a DataFrame
+missing_values_df = missing_values.reset_index()
+missing_values_df.columns = ['Column', 'Missing_Values']
+
+# Display the table
+print(missing_values_df)
 ```
 
 ## Task 3 - Data Merging
 __1. Identify any FIPS codes that are present in the NRI data but not in the SVI data and vice versa. Describe any discrepancies and possible causes? What to these discrepancies, if any, mean for interpreting results based on the merged dataset moving forward?__
+```{python}
+# Get the sets of FIPS codes
+nri_fips = set(nri_df['STCOFIPS'])
+svi_fips = set(svi_df['FIPS'])
+
+# Identify discrepancies
+nri_not_in_svi = nri_fips - svi_fips
+svi_not_in_nri = svi_fips - nri_fips
+
+# Display discrepancies
+print("FIPS in NRI but not in SVI:", nri_not_in_svi)
+print("FIPS in SVI but not in NRI:", svi_not_in_nri)
 ```
-# your code here
-```
-__2. Merge the NRI and SVI data on the FIPS code. Use an outer join to keep all counties in the final dataset.__
-```
-# your code here
+Possible cause: Data Collection Differences: The datasets may have been compiled using different criteria or timeframes, leading to discrepancies in coverage.
+_
+_2. Merge the NRI and SVI data on the FIPS code. Use an outer join to keep all counties in the final dataset.__
+```{python}
+# Merge the datasets using an outer join
+merged_data = pd.merge(nri_df, svi_df, left_on='STCOFIPS', right_on='FIPS', how='outer')
+
+# Display the first few rows of the merged dataset
+print(merged_data.head())
 ```
 __3. Create a table / dataframe that shows the number of missing values in each column of the merged dataset.__
 
-```
-# your code here
+```{python}
+# Calculate the number of missing values in each column
+missing_values_merged = merged_data.isnull().sum()
+
+# Create a DataFrame to display the missing values
+missing_values_merged_df = missing_values_merged.reset_index()
+missing_values_merged_df.columns = ['Column', 'Missing_Values']
+
+# Display the table
+print(missing_values_merged_df)
 ```
 
 ## Task 4 - Data Analysis
@@ -91,6 +177,22 @@ __3. Create a table / dataframe that shows the number of missing values in each 
 __1. For each numerical variable in the merged dataset, plot a histogram showing the distribution of values.
 (Hint: write a function to make the histogram for a single variable, then use a loop or apply function to make the histograms for all numerical variables.)__
 
-```
-# your code here
+```{python}
+# Function to plot a histogram for a single variable
+def plot_histogram(column):
+    plt.figure(figsize=(8, 6))
+    plt.hist(merged_data[column].dropna(), bins=30, edgecolor='k', alpha=0.7)
+    plt.title(f'Distribution of {column}')
+    plt.xlabel(column)
+    plt.ylabel('Frequency')
+    plt.grid(True)
+    plt.show()
+
+# Identify numerical columns
+numerical_columns = merged_data.select_dtypes(include=['number']).columns
+
+# Plot histograms for each numerical variable
+for column in numerical_columns:
+    plot_histogram(column)
+
 ```

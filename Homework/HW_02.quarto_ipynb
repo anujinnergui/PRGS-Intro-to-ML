@@ -1,0 +1,353 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "---\n",
+        "title: \"Homework 2\"\n",
+        "format: html\n",
+        "---\n",
+        "\n",
+        "\n",
+        "__Due Date:__ 2022-10-16 at 8:30 AM PT\n",
+        "\n",
+        "---\n",
+        "\n",
+        "\n",
+        "__Name:__ Anujin Nergui \n",
+        "\n",
+        "\n",
+        "\n",
+        "For this assignment, you will practice downloadings, cleaning, and analyzing data from the [National Risk Index (NRI)](https://hazards.fema.gov/nri/) and the [CDC Social Vulnerability Index (SVI)](https://www.atsdr.cdc.gov/placeandhealth/svi/index.html).\n",
+        "\n",
+        "## Preparation\n",
+        "\n",
+        "1. Create a 'data' folder in the root directory of your repository.\n",
+        "1. Inside the 'data' folder, create a 'raw' folder.\n",
+        "1. Add and commit a '.gitignore' file to the root directory of this repository that excludes all contents of the 'data' folder.\n",
+        "1. Download the county-level NRI and SVI data for the entire United States. Place the data in the 'data/raw' folder.\n",
+        "1. In the repository README, provide a brief (1-2 sentence) description of each file in the 'data' folder and a link to the original source of the data.\n",
+        "\n",
+        "## Task 1 - NRI Data Cleaning\n",
+        "\n",
+        "__1. Import the NRI data. Ensure that the [FIPS code](https://en.wikipedia.org/wiki/Federal_Information_Processing_Standard_state_code) variable ('STCOFIPS') is correctly identified as a string / character variable. Otherwise, the leading zeros will be removed.__"
+      ],
+      "id": "01a9285b"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "import pandas as pd\n",
+        "nri_data_path = r'C:\\Users\\anergui\\OneDrive - RAND Corporation\\Fall 2024\\Intro to ML\\Code\\PRGS-Intro-to-ML\\data\\raw\\NRI_Table_Counties.csv'  \n",
+        "\n",
+        "# Load the CSV data and ensure 'STCOFIPS' is read as a string\n",
+        "nri_df = pd.read_csv(nri_data_path, dtype={'STCOFIPS': str})\n",
+        "\n",
+        "# Preview the data to confirm it's loaded properly\n",
+        "print(nri_df.head()) "
+      ],
+      "id": "d6c5704c",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "__2. Subset the NRI data to include only the 5-digit state/county FIPS code and all colums ending with '\\_AFREQ' and '\\_RISKR'. Each of these columns represents a different hazard type.__"
+      ],
+      "id": "7c2da380"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "# Combine the selected columns and include 'STCOFIPS'\n",
+        "subset_columns = ['STCOFIPS'] + [col for col in nri_df.columns if col.endswith('_AFREQ') or col.endswith('_RISKR')] \n",
+        "# Subset the dataframe\n",
+        "nri_subset = nri_df[subset_columns]\n",
+        "\n",
+        "# Preview the subsetted data\n",
+        "print(nri_subset.head())"
+      ],
+      "id": "e0dfe950",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "__3. Create a table / dataframe that, for each hazard type, shows the number of missing values in the '\\_AFREQ' and '\\_RISKR' columns.__"
+      ],
+      "id": "c7945bff"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "# Calculate the number of missing values\n",
+        "missing_values = nri_subset.isnull().sum()\n",
+        "\n",
+        "# Filter for '_AFREQ' and '_RISKR' columns\n",
+        "missing_values_filtered = missing_values[missing_values.index.str.endswith('_AFREQ') | missing_values.index.str.endswith('_RISKR')]\n",
+        "\n",
+        "# Create a DataFrame\n",
+        "missing_values_df = missing_values_filtered.reset_index()\n",
+        "missing_values_df.columns = ['Hazard_Type', 'Missing_Values']\n",
+        "\n",
+        "# Display the table\n",
+        "print(missing_values_df)"
+      ],
+      "id": "8426118b",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "__4. Create a new column in the original data table indicating whether or not 'AVLN_AFREQ' is missing or observed. Show the cross-tabulation of the 'AVLN_AFREQ' missingness and 'AVLN_RISKR' columns (including missing values). What do you observe?__"
+      ],
+      "id": "932df9a9"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "# Create a new column for AVLN_AFREQ missingness\n",
+        "nri_df['AVLN_AFREQ_Missing'] = nri_df['AVLN_AFREQ'].isnull()\n",
+        "\n",
+        "# Cross-tabulation of AVLN_AFREQ missingness and AVLN_RISKR\n",
+        "cross_tab = pd.crosstab(nri_df['AVLN_AFREQ_Missing'], nri_df['AVLN_RISKR'], dropna=False)\n",
+        "\n",
+        "# Display the cross-tabulation\n",
+        "print(cross_tab)"
+      ],
+      "id": "f7fccca4",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "We observe that when fequency increases risk level decreases.\n",
+        "\n",
+        "__5. Assuming that a risk that is \"not applicable\" to a county has an annualized frequency of 0, impute the relevant missing values in the '\\_AFREQ' columns with 0.__"
+      ],
+      "id": "9747b2c1"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "# Identify '_AFREQ' columns\n",
+        "afreq_columns = [col for col in nri_df.columns if col.endswith('_AFREQ')]\n",
+        "\n",
+        "# Impute missing values with 0\n",
+        "nri_df[afreq_columns] = nri_df[afreq_columns].fillna(0)\n",
+        "\n",
+        "# Verify the changes\n",
+        "print(nri_df[afreq_columns].head())"
+      ],
+      "id": "6bab399b",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Task 2 - SVI Data Cleaning\n",
+        "\n",
+        "__1. Import the SVI data. Ensure that the FIPS code is correctly identified as a string / character variable. Otherwise, the leading zeros will be removed.__\n",
+        "__1. Subset the SVI data to include only the following columns:__\n",
+        "`ST, STATE, ST_ABBR, STCNTY, COUNTY, FIPS, LOCATION, AREA_SQMI, E_TOTPOP, EP_POV150, EP_UNEMP, EP_HBURD, EP_NOHSDP, EP_UNINSUR, EP_AGE65, EP_AGE17, EP_DISABL, EP_SNGPNT, EP_LIMENG, EP_MINRTY, EP_MUNIT, EP_MOBILE, EP_CROWD, EP_NOVEH, EP_GROUPQ, EP_NOINT, EP_AFAM, EP_HISP, EP_ASIAN, EP_AIAN, EP_NHPI, EP_TWOMORE, EP_OTHERRACE`"
+      ],
+      "id": "24dda545"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "svi_path = r'C:\\Users\\anergui\\OneDrive - RAND Corporation\\Fall 2024\\Intro to ML\\Code\\PRGS-Intro-to-ML\\data\\raw\\SVI_2022_US_county.csv'\n",
+        "# Load the SVI data\n",
+        "\n",
+        "svi_df = pd.read_csv(svi_path, dtype={'FIPS': str})\n",
+        "\n",
+        "# Step 2: Subset the SVI data to include the required columns\n",
+        "required_columns = [\n",
+        "    'ST', 'STATE', 'ST_ABBR', 'STCNTY', 'COUNTY', 'FIPS', 'LOCATION', 'AREA_SQMI',\n",
+        "    'E_TOTPOP', 'EP_POV150', 'EP_UNEMP', 'EP_HBURD', 'EP_NOHSDP', 'EP_UNINSUR', 'EP_AGE65',\n",
+        "    'EP_AGE17', 'EP_DISABL', 'EP_SNGPNT', 'EP_LIMENG', 'EP_MINRTY', 'EP_MUNIT', 'EP_MOBILE',\n",
+        "    'EP_CROWD', 'EP_NOVEH', 'EP_GROUPQ', 'EP_NOINT', 'EP_AFAM', 'EP_HISP', 'EP_ASIAN',\n",
+        "    'EP_AIAN', 'EP_NHPI', 'EP_TWOMORE', 'EP_OTHERRACE'\n",
+        "]\n",
+        "\n",
+        "# Subset the dataframe\n",
+        "svi_subset = svi_df[required_columns] \n",
+        "\n",
+        "# Display the first few rows of the subset\n",
+        "print(svi_subset.head())"
+      ],
+      "id": "e236d82b",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "__2. Create a table / dataframe that shows the number of missing values in each column.\n",
+        "(Hint: if you wrote a function for Task 1, you can reuse it here.)__"
+      ],
+      "id": "704ffe09"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "# Calculate the number of missing values\n",
+        "missing_values = svi_subset.isnull().sum()\n",
+        "\n",
+        "# Create a DataFrame\n",
+        "missing_values_df = missing_values.reset_index()\n",
+        "missing_values_df.columns = ['Column', 'Missing_Values']\n",
+        "\n",
+        "# Display the table\n",
+        "print(missing_values_df)"
+      ],
+      "id": "79a60018",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Task 3 - Data Merging\n",
+        "__1. Identify any FIPS codes that are present in the NRI data but not in the SVI data and vice versa. Describe any discrepancies and possible causes? What to these discrepancies, if any, mean for interpreting results based on the merged dataset moving forward?__"
+      ],
+      "id": "aeb6fd95"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "# Get the sets of FIPS codes\n",
+        "nri_fips = set(nri_df['STCOFIPS'])\n",
+        "svi_fips = set(svi_df['FIPS'])\n",
+        "\n",
+        "# Identify discrepancies\n",
+        "nri_not_in_svi = nri_fips - svi_fips\n",
+        "svi_not_in_nri = svi_fips - nri_fips\n",
+        "\n",
+        "# Display discrepancies\n",
+        "print(\"FIPS in NRI but not in SVI:\", nri_not_in_svi)\n",
+        "print(\"FIPS in SVI but not in NRI:\", svi_not_in_nri)"
+      ],
+      "id": "b4e7dc84",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "Possible cause: Data Collection Differences: The datasets may have been compiled using different criteria or timeframes, leading to discrepancies in coverage.\n",
+        "_\n",
+        "_2. Merge the NRI and SVI data on the FIPS code. Use an outer join to keep all counties in the final dataset.__"
+      ],
+      "id": "2582352b"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "# Merge the datasets using an outer join\n",
+        "merged_data = pd.merge(nri_df, svi_df, left_on='STCOFIPS', right_on='FIPS', how='outer')\n",
+        "\n",
+        "# Display the first few rows of the merged dataset\n",
+        "print(merged_data.head())"
+      ],
+      "id": "1368b91e",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "__3. Create a table / dataframe that shows the number of missing values in each column of the merged dataset.__"
+      ],
+      "id": "3de5bd1e"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "# Calculate the number of missing values in each column\n",
+        "missing_values_merged = merged_data.isnull().sum()\n",
+        "\n",
+        "# Create a DataFrame to display the missing values\n",
+        "missing_values_merged_df = missing_values_merged.reset_index()\n",
+        "missing_values_merged_df.columns = ['Column', 'Missing_Values']\n",
+        "\n",
+        "# Display the table\n",
+        "print(missing_values_merged_df)"
+      ],
+      "id": "6128b54d",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Task 4 - Data Analysis\n",
+        "\n",
+        "__1. For each numerical variable in the merged dataset, plot a histogram showing the distribution of values.\n",
+        "(Hint: write a function to make the histogram for a single variable, then use a loop or apply function to make the histograms for all numerical variables.)__"
+      ],
+      "id": "5eee2c5c"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "# Function to plot a histogram for a single variable\n",
+        "def plot_histogram(column):\n",
+        "    plt.figure(figsize=(8, 6))\n",
+        "    plt.hist(merged_data[column].dropna(), bins=30, edgecolor='k', alpha=0.7)\n",
+        "    plt.title(f'Distribution of {column}')\n",
+        "    plt.xlabel(column)\n",
+        "    plt.ylabel('Frequency')\n",
+        "    plt.grid(True)\n",
+        "    plt.show()\n",
+        "\n",
+        "# Identify numerical columns\n",
+        "numerical_columns = merged_data.select_dtypes(include=['number']).columns\n",
+        "\n",
+        "# Plot histograms for each numerical variable\n",
+        "for column in numerical_columns:\n",
+        "    plot_histogram(column)"
+      ],
+      "id": "baee5cc8",
+      "execution_count": null,
+      "outputs": []
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "name": "python3",
+      "language": "python",
+      "display_name": "Python 3 (ipykernel)",
+      "path": "C:\\Users\\anergui\\AppData\\Local\\miniconda3\\share\\jupyter\\kernels\\python3"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 5
+}
