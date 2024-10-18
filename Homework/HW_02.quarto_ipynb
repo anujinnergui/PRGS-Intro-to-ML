@@ -33,7 +33,7 @@
         "\n",
         "__1. Import the NRI data. Ensure that the [FIPS code](https://en.wikipedia.org/wiki/Federal_Information_Processing_Standard_state_code) variable ('STCOFIPS') is correctly identified as a string / character variable. Otherwise, the leading zeros will be removed.__"
       ],
-      "id": "01a9285b"
+      "id": "bdb25142"
     },
     {
       "cell_type": "code",
@@ -48,7 +48,7 @@
         "# Preview the data to confirm it's loaded properly\n",
         "print(nri_df.head()) "
       ],
-      "id": "d6c5704c",
+      "id": "8572a0dd",
       "execution_count": null,
       "outputs": []
     },
@@ -58,7 +58,7 @@
       "source": [
         "__2. Subset the NRI data to include only the 5-digit state/county FIPS code and all colums ending with '\\_AFREQ' and '\\_RISKR'. Each of these columns represents a different hazard type.__"
       ],
-      "id": "7c2da380"
+      "id": "63b17879"
     },
     {
       "cell_type": "code",
@@ -72,7 +72,7 @@
         "# Preview the subsetted data\n",
         "print(nri_subset.head())"
       ],
-      "id": "e0dfe950",
+      "id": "03bb6dce",
       "execution_count": null,
       "outputs": []
     },
@@ -82,7 +82,7 @@
       "source": [
         "__3. Create a table / dataframe that, for each hazard type, shows the number of missing values in the '\\_AFREQ' and '\\_RISKR' columns.__"
       ],
-      "id": "c7945bff"
+      "id": "320cd39c"
     },
     {
       "cell_type": "code",
@@ -101,7 +101,7 @@
         "# Display the table\n",
         "print(missing_values_df)"
       ],
-      "id": "8426118b",
+      "id": "9dcfc5e7",
       "execution_count": null,
       "outputs": []
     },
@@ -111,7 +111,7 @@
       "source": [
         "__4. Create a new column in the original data table indicating whether or not 'AVLN_AFREQ' is missing or observed. Show the cross-tabulation of the 'AVLN_AFREQ' missingness and 'AVLN_RISKR' columns (including missing values). What do you observe?__"
       ],
-      "id": "932df9a9"
+      "id": "3e59b68d"
     },
     {
       "cell_type": "code",
@@ -126,7 +126,7 @@
         "# Display the cross-tabulation\n",
         "print(cross_tab)"
       ],
-      "id": "f7fccca4",
+      "id": "0b35f63d",
       "execution_count": null,
       "outputs": []
     },
@@ -138,7 +138,7 @@
         "\n",
         "__5. Assuming that a risk that is \"not applicable\" to a county has an annualized frequency of 0, impute the relevant missing values in the '\\_AFREQ' columns with 0.__"
       ],
-      "id": "9747b2c1"
+      "id": "73d5b6d9"
     },
     {
       "cell_type": "code",
@@ -153,7 +153,7 @@
         "# Verify the changes\n",
         "print(nri_df[afreq_columns].head())"
       ],
-      "id": "6bab399b",
+      "id": "d1de2dee",
       "execution_count": null,
       "outputs": []
     },
@@ -167,7 +167,7 @@
         "__1. Subset the SVI data to include only the following columns:__\n",
         "`ST, STATE, ST_ABBR, STCNTY, COUNTY, FIPS, LOCATION, AREA_SQMI, E_TOTPOP, EP_POV150, EP_UNEMP, EP_HBURD, EP_NOHSDP, EP_UNINSUR, EP_AGE65, EP_AGE17, EP_DISABL, EP_SNGPNT, EP_LIMENG, EP_MINRTY, EP_MUNIT, EP_MOBILE, EP_CROWD, EP_NOVEH, EP_GROUPQ, EP_NOINT, EP_AFAM, EP_HISP, EP_ASIAN, EP_AIAN, EP_NHPI, EP_TWOMORE, EP_OTHERRACE`"
       ],
-      "id": "24dda545"
+      "id": "837cea99"
     },
     {
       "cell_type": "code",
@@ -193,7 +193,7 @@
         "# Display the first few rows of the subset\n",
         "print(svi_subset.head())"
       ],
-      "id": "e236d82b",
+      "id": "8b2ee388",
       "execution_count": null,
       "outputs": []
     },
@@ -204,7 +204,7 @@
         "__2. Create a table / dataframe that shows the number of missing values in each column.\n",
         "(Hint: if you wrote a function for Task 1, you can reuse it here.)__"
       ],
-      "id": "704ffe09"
+      "id": "1da27375"
     },
     {
       "cell_type": "code",
@@ -220,7 +220,7 @@
         "# Display the table\n",
         "print(missing_values_df)"
       ],
-      "id": "79a60018",
+      "id": "49e0fa72",
       "execution_count": null,
       "outputs": []
     },
@@ -231,7 +231,7 @@
         "## Task 3 - Data Merging\n",
         "__1. Identify any FIPS codes that are present in the NRI data but not in the SVI data and vice versa. Describe any discrepancies and possible causes? What to these discrepancies, if any, mean for interpreting results based on the merged dataset moving forward?__"
       ],
-      "id": "aeb6fd95"
+      "id": "3ac70718"
     },
     {
       "cell_type": "code",
@@ -249,7 +249,7 @@
         "print(\"FIPS in NRI but not in SVI:\", nri_not_in_svi)\n",
         "print(\"FIPS in SVI but not in NRI:\", svi_not_in_nri)"
       ],
-      "id": "b4e7dc84",
+      "id": "27047764",
       "execution_count": null,
       "outputs": []
     },
@@ -261,7 +261,7 @@
         "_\n",
         "_2. Merge the NRI and SVI data on the FIPS code. Use an outer join to keep all counties in the final dataset.__"
       ],
-      "id": "2582352b"
+      "id": "1e3b5687"
     },
     {
       "cell_type": "code",
@@ -273,7 +273,7 @@
         "# Display the first few rows of the merged dataset\n",
         "print(merged_data.head())"
       ],
-      "id": "1368b91e",
+      "id": "a6ab0361",
       "execution_count": null,
       "outputs": []
     },
@@ -283,7 +283,7 @@
       "source": [
         "__3. Create a table / dataframe that shows the number of missing values in each column of the merged dataset.__"
       ],
-      "id": "3de5bd1e"
+      "id": "232b3a50"
     },
     {
       "cell_type": "code",
@@ -299,7 +299,7 @@
         "# Display the table\n",
         "print(missing_values_merged_df)"
       ],
-      "id": "6128b54d",
+      "id": "e11e6c73",
       "execution_count": null,
       "outputs": []
     },
@@ -312,7 +312,7 @@
         "__1. For each numerical variable in the merged dataset, plot a histogram showing the distribution of values.\n",
         "(Hint: write a function to make the histogram for a single variable, then use a loop or apply function to make the histograms for all numerical variables.)__"
       ],
-      "id": "5eee2c5c"
+      "id": "99f72669"
     },
     {
       "cell_type": "code",
@@ -335,7 +335,7 @@
         "for column in numerical_columns:\n",
         "    plot_histogram(column)"
       ],
-      "id": "baee5cc8",
+      "id": "49294541",
       "execution_count": null,
       "outputs": []
     }
