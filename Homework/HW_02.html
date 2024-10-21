@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -64,7 +98,7 @@ ul.task-list li input[type="checkbox"] {
 
 <p><strong>Due Date:</strong> 2022-10-16 at 8:30 AM PT</p>
 <hr>
-<p><strong>Name:</strong> &lt;Anujin Nergui&gt;</p>
+<p><strong>Name:</strong> Anujin Nergui</p>
 <p>For this assignment, you will practice downloadings, cleaning, and analyzing data from the <a href="https://hazards.fema.gov/nri/">National Risk Index (NRI)</a> and the <a href="https://www.atsdr.cdc.gov/placeandhealth/svi/index.html">CDC Social Vulnerability Index (SVI)</a>.</p>
 <section id="preparation" class="level2">
 <h2 class="anchored" data-anchor-id="preparation">Preparation</h2>
@@ -79,42 +113,4277 @@ ul.task-list li input[type="checkbox"] {
 <section id="task-1---nri-data-cleaning" class="level2">
 <h2 class="anchored" data-anchor-id="task-1---nri-data-cleaning">Task 1 - NRI Data Cleaning</h2>
 <p><strong>1. Import the NRI data. Ensure that the <a href="https://en.wikipedia.org/wiki/Federal_Information_Processing_Standard_state_code">FIPS code</a> variable (‘STCOFIPS’) is correctly identified as a string / character variable. Otherwise, the leading zeros will be removed.</strong></p>
-<pre><code>import pandas as pd
+<div id="5d9f1717" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>nri_data_path <span class="op">=</span> <span class="vs">r'C:\Users\anergui\OneDrive - RAND Corporation\Fall 2024\Intro to ML\Code\PRGS-Intro-to-ML\data\raw\NRI_Table_Counties.csv'</span>  </span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the CSV data and ensure 'STCOFIPS' is read as a string</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>nri_df <span class="op">=</span> pd.read_csv(nri_data_path, dtype<span class="op">=</span>{<span class="st">'STCOFIPS'</span>: <span class="bu">str</span>})</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Preview the data to confirm it's loaded properly</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(nri_df.head()) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   OID_  NRI_ID    STATE STATEABBRV  STATEFIPS   COUNTY COUNTYTYPE  \
+0     1  C01001  Alabama         AL          1  Autauga     County   
+1     2  C01003  Alabama         AL          1  Baldwin     County   
+2     3  C01005  Alabama         AL          1  Barbour     County   
+3     4  C01007  Alabama         AL          1     Bibb     County   
+4     5  C01009  Alabama         AL          1   Blount     County   
 
-#Load the NRI data
-nri_data = pd.read_csv('data/raw/NRI_Table_Counties.csv', dtype={'STCOFIPS': str})
+   COUNTYFIPS STCOFIPS  POPULATION  ...  WNTW_EALS            WNTW_EALR  \
+0           1    01001       58764  ...  15.784587             Very Low   
+1           3    01003      231365  ...  56.205509  Relatively Moderate   
+2           5    01005       25160  ...  18.632002       Relatively Low   
+3           7    01007       22239  ...  13.308573             Very Low   
+4           9    01009       58992  ...  23.645930       Relatively Low   
 
-# Display the first few rows of the data
-print(nri_data.head())</code></pre>
+      WNTW_ALRB     WNTW_ALRP     WNTW_ALRA WNTW_ALR_NPCTL    WNTW_RISKV  \
+0  2.687716e-07  7.410082e-09  8.725777e-06      10.461158   8494.906508   
+1  1.268231e-09  2.287120e-08  1.548360e-07      13.339523  65619.701638   
+2  5.788050e-07  2.347236e-08  7.606598e-07      16.125039  15501.730335   
+3  9.014679e-07  1.270300e-08  1.202015e-05      16.991643   7496.186940   
+4  5.268425e-07  1.482016e-08  2.002965e-07      12.039616  17175.160729   
+
+   WNTW_RISKS      WNTW_RISKR     NRI_VER  
+0   12.217626        Very Low  March 2023  
+1   52.083996  Relatively Low  March 2023  
+2   19.535476        Very Low  March 2023  
+3   11.104041        Very Low  March 2023  
+4   21.444480        Very Low  March 2023  
+
+[5 rows x 465 columns]</code></pre>
+</div>
+</div>
 <p><strong>2. Subset the NRI data to include only the 5-digit state/county FIPS code and all colums ending with ‘_AFREQ’ and ‘_RISKR’. Each of these columns represents a different hazard type.</strong></p>
-<pre><code># your code here</code></pre>
+<div id="ec006348" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine the selected columns and include 'STCOFIPS'</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>subset_columns <span class="op">=</span> [<span class="st">'STCOFIPS'</span>] <span class="op">+</span> [col <span class="cf">for</span> col <span class="kw">in</span> nri_df.columns <span class="cf">if</span> col.endswith(<span class="st">'_AFREQ'</span>) <span class="kw">or</span> col.endswith(<span class="st">'_RISKR'</span>)] </span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Subset the dataframe</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>nri_subset <span class="op">=</span> nri_df[subset_columns]</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Preview the subsetted data</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(nri_subset.head())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  STCOFIPS  AVLN_AFREQ      AVLN_RISKR  CFLD_AFREQ      CFLD_RISKR  \
+0    01001         NaN  Not Applicable         NaN  Not Applicable   
+1    01003         NaN  Not Applicable    3.684142  Relatively Low   
+2    01005         NaN  Not Applicable         NaN  Not Applicable   
+3    01007         NaN  Not Applicable         NaN  Not Applicable   
+4    01009         NaN  Not Applicable         NaN  Not Applicable   
+
+   CWAV_AFREQ CWAV_RISKR  DRGT_AFREQ           DRGT_RISKR  ERQK_AFREQ  ...  \
+0         0.0  No Rating   25.969774       Relatively Low    0.000431  ...   
+1         0.0  No Rating   12.353442  Relatively Moderate    0.000338  ...   
+2         0.0  No Rating   43.956953       Relatively Low    0.000227  ...   
+3         0.0  No Rating   28.894501             Very Low    0.000790  ...   
+4         0.0  No Rating   28.152598       Relatively Low    0.000817  ...   
+
+  TRND_AFREQ           TRND_RISKR TSUN_AFREQ         TSUN_RISKR VLCN_AFREQ  \
+0   0.480184  Relatively Moderate        NaN     Not Applicable        NaN   
+1   0.953140  Relatively Moderate        NaN  Insufficient Data        NaN   
+2   0.739018  Relatively Moderate        NaN     Not Applicable        NaN   
+3   0.586160  Relatively Moderate        NaN     Not Applicable        NaN   
+4   0.710332  Relatively Moderate        NaN     Not Applicable        NaN   
+
+       VLCN_RISKR WFIR_AFREQ           WFIR_RISKR WNTW_AFREQ      WNTW_RISKR  
+0  Not Applicable   0.000035             Very Low   0.433437        Very Low  
+1  Not Applicable   0.002229  Relatively Moderate   0.182759  Relatively Low  
+2  Not Applicable   0.000038             Very Low   0.185759        Very Low  
+3  Not Applicable   0.000040             Very Low   0.743034        Very Low  
+4  Not Applicable   0.000035             Very Low   0.866873        Very Low  
+
+[5 rows x 37 columns]</code></pre>
+</div>
+</div>
 <p><strong>3. Create a table / dataframe that, for each hazard type, shows the number of missing values in the ‘_AFREQ’ and ‘_RISKR’ columns.</strong></p>
-<pre><code># your code here</code></pre>
+<div id="8f38727c" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the number of missing values</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>missing_values <span class="op">=</span> nri_subset.isnull().<span class="bu">sum</span>()</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter for '_AFREQ' and '_RISKR' columns</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>missing_values_filtered <span class="op">=</span> missing_values[missing_values.index.<span class="bu">str</span>.endswith(<span class="st">'_AFREQ'</span>) <span class="op">|</span> missing_values.index.<span class="bu">str</span>.endswith(<span class="st">'_RISKR'</span>)]</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a DataFrame</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>missing_values_df <span class="op">=</span> missing_values_filtered.reset_index()</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>missing_values_df.columns <span class="op">=</span> [<span class="st">'Hazard_Type'</span>, <span class="st">'Missing_Values'</span>]</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the table</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(missing_values_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Hazard_Type  Missing_Values
+0   AVLN_AFREQ            3023
+1   AVLN_RISKR               0
+2   CFLD_AFREQ            2646
+3   CFLD_RISKR               0
+4   CWAV_AFREQ               0
+5   CWAV_RISKR               0
+6   DRGT_AFREQ               7
+7   DRGT_RISKR               0
+8   ERQK_AFREQ               0
+9   ERQK_RISKR               0
+10  HAIL_AFREQ               7
+11  HAIL_RISKR               0
+12  HWAV_AFREQ               0
+13  HWAV_RISKR               0
+14  HRCN_AFREQ             918
+15  HRCN_RISKR               0
+16  ISTM_AFREQ             229
+17  ISTM_RISKR               0
+18  LNDS_AFREQ              40
+19  LNDS_RISKR               0
+20  LTNG_AFREQ             123
+21  LTNG_RISKR               0
+22  RFLD_AFREQ               0
+23  RFLD_RISKR               0
+24  SWND_AFREQ               7
+25  SWND_RISKR               0
+26  TRND_AFREQ               7
+27  TRND_RISKR               0
+28  TSUN_AFREQ            3103
+29  TSUN_RISKR               0
+30  VLCN_AFREQ            3125
+31  VLCN_RISKR               0
+32  WFIR_AFREQ              88
+33  WFIR_RISKR               0
+34  WNTW_AFREQ               0
+35  WNTW_RISKR               0</code></pre>
+</div>
+</div>
 <p><strong>4. Create a new column in the original data table indicating whether or not ‘AVLN_AFREQ’ is missing or observed. Show the cross-tabulation of the ‘AVLN_AFREQ’ missingness and ‘AVLN_RISKR’ columns (including missing values). What do you observe?</strong></p>
-<pre><code># your code here</code></pre>
+<div id="d1d8e55a" class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a new column for AVLN_AFREQ missingness</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>nri_df[<span class="st">'AVLN_AFREQ_Missing'</span>] <span class="op">=</span> nri_df[<span class="st">'AVLN_AFREQ'</span>].isnull()</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Cross-tabulation of AVLN_AFREQ missingness and AVLN_RISKR</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>cross_tab <span class="op">=</span> pd.crosstab(nri_df[<span class="st">'AVLN_AFREQ_Missing'</span>], nri_df[<span class="st">'AVLN_RISKR'</span>], dropna<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the cross-tabulation</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(cross_tab)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>AVLN_RISKR          Not Applicable  Relatively High  Relatively Low  \
+AVLN_AFREQ_Missing                                                    
+False                            0               15              52   
+True                          3023                0               0   
+
+AVLN_RISKR          Relatively Moderate  Very High  Very Low  
+AVLN_AFREQ_Missing                                            
+False                                33          9        99  
+True                                  0          0         0  </code></pre>
+</div>
+</div>
+<p>We observe that when fequency increases risk level decreases.</p>
 <p><strong>5. Assuming that a risk that is “not applicable” to a county has an annualized frequency of 0, impute the relevant missing values in the ‘_AFREQ’ columns with 0.</strong></p>
-<pre><code># your code here</code></pre>
+<div id="5866840a" class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Identify '_AFREQ' columns</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>afreq_columns <span class="op">=</span> [col <span class="cf">for</span> col <span class="kw">in</span> nri_df.columns <span class="cf">if</span> col.endswith(<span class="st">'_AFREQ'</span>)]</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Impute missing values with 0</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>nri_df[afreq_columns] <span class="op">=</span> nri_df[afreq_columns].fillna(<span class="dv">0</span>)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Verify the changes</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(nri_df[afreq_columns].head())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   AVLN_AFREQ  CFLD_AFREQ  CWAV_AFREQ  DRGT_AFREQ  ERQK_AFREQ  HAIL_AFREQ  \
+0         0.0    0.000000         0.0   25.969774    0.000431    2.806764   
+1         0.0    3.684142         0.0   12.353442    0.000338    1.529256   
+2         0.0    0.000000         0.0   43.956953    0.000227    1.908785   
+3         0.0    0.000000         0.0   28.894501    0.000790    3.447868   
+4         0.0    0.000000         0.0   28.152598    0.000817    5.101344   
+
+   HWAV_AFREQ  HRCN_AFREQ  ISTM_AFREQ  LNDS_AFREQ  LTNG_AFREQ  RFLD_AFREQ  \
+0    0.371517    0.080450    0.402025     0.01000   78.938052    1.083333   
+1    0.939761    0.248233    0.191996     0.01056  142.231875    2.708333   
+2    0.371517    0.116398    0.393288     0.01000   74.655092    0.250000   
+3    0.371517    0.066724    0.413094     0.01000   84.589029    0.666667   
+4    0.371517    0.039238    0.509665     0.01000   88.777653    1.166667   
+
+   SWND_AFREQ  TRND_AFREQ  TSUN_AFREQ  VLCN_AFREQ  WFIR_AFREQ  WNTW_AFREQ  
+0    1.297310    0.480184         0.0         0.0    0.000035    0.433437  
+1    1.839032    0.953140         0.0         0.0    0.002229    0.182759  
+2    1.456485    0.739018         0.0         0.0    0.000038    0.185759  
+3    1.457585    0.586160         0.0         0.0    0.000040    0.743034  
+4    4.286763    0.710332         0.0         0.0    0.000035    0.866873  </code></pre>
+</div>
+</div>
 </section>
 <section id="task-2---svi-data-cleaning" class="level2">
 <h2 class="anchored" data-anchor-id="task-2---svi-data-cleaning">Task 2 - SVI Data Cleaning</h2>
 <p><strong>1. Import the SVI data. Ensure that the FIPS code is correctly identified as a string / character variable. Otherwise, the leading zeros will be removed.</strong> <strong>1. Subset the SVI data to include only the following columns:</strong> <code>ST, STATE, ST_ABBR, STCNTY, COUNTY, FIPS, LOCATION, AREA_SQMI, E_TOTPOP, EP_POV150, EP_UNEMP, EP_HBURD, EP_NOHSDP, EP_UNINSUR, EP_AGE65, EP_AGE17, EP_DISABL, EP_SNGPNT, EP_LIMENG, EP_MINRTY, EP_MUNIT, EP_MOBILE, EP_CROWD, EP_NOVEH, EP_GROUPQ, EP_NOINT, EP_AFAM, EP_HISP, EP_ASIAN, EP_AIAN, EP_NHPI, EP_TWOMORE, EP_OTHERRACE</code></p>
-<pre><code># your code here</code></pre>
+<div id="6aca4cbc" class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>svi_path <span class="op">=</span> <span class="vs">r'C:\Users\anergui\OneDrive - RAND Corporation\Fall 2024\Intro to ML\Code\PRGS-Intro-to-ML\data\raw\SVI_2022_US_county.csv'</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the SVI data</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>svi_df <span class="op">=</span> pd.read_csv(svi_path, dtype<span class="op">=</span>{<span class="st">'FIPS'</span>: <span class="bu">str</span>})</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 2: Subset the SVI data to include the required columns</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>required_columns <span class="op">=</span> [</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">'ST'</span>, <span class="st">'STATE'</span>, <span class="st">'ST_ABBR'</span>, <span class="st">'STCNTY'</span>, <span class="st">'COUNTY'</span>, <span class="st">'FIPS'</span>, <span class="st">'LOCATION'</span>, <span class="st">'AREA_SQMI'</span>,</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">'E_TOTPOP'</span>, <span class="st">'EP_POV150'</span>, <span class="st">'EP_UNEMP'</span>, <span class="st">'EP_HBURD'</span>, <span class="st">'EP_NOHSDP'</span>, <span class="st">'EP_UNINSUR'</span>, <span class="st">'EP_AGE65'</span>,</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">'EP_AGE17'</span>, <span class="st">'EP_DISABL'</span>, <span class="st">'EP_SNGPNT'</span>, <span class="st">'EP_LIMENG'</span>, <span class="st">'EP_MINRTY'</span>, <span class="st">'EP_MUNIT'</span>, <span class="st">'EP_MOBILE'</span>,</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">'EP_CROWD'</span>, <span class="st">'EP_NOVEH'</span>, <span class="st">'EP_GROUPQ'</span>, <span class="st">'EP_NOINT'</span>, <span class="st">'EP_AFAM'</span>, <span class="st">'EP_HISP'</span>, <span class="st">'EP_ASIAN'</span>,</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">'EP_AIAN'</span>, <span class="st">'EP_NHPI'</span>, <span class="st">'EP_TWOMORE'</span>, <span class="st">'EP_OTHERRACE'</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Subset the dataframe</span></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>svi_subset <span class="op">=</span> svi_df[required_columns] </span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the first few rows of the subset</span></span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(svi_subset.head())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   ST    STATE ST_ABBR  STCNTY          COUNTY   FIPS  \
+0   1  Alabama      AL    1001  Autauga County  01001   
+1   1  Alabama      AL    1003  Baldwin County  01003   
+2   1  Alabama      AL    1005  Barbour County  01005   
+3   1  Alabama      AL    1007     Bibb County  01007   
+4   1  Alabama      AL    1009   Blount County  01009   
+
+                  LOCATION    AREA_SQMI  E_TOTPOP  EP_POV150  ...  EP_NOVEH  \
+0  Autauga County, Alabama   594.454786     58761       20.2  ...       4.0   
+1  Baldwin County, Alabama  1589.861817    233420       18.3  ...       2.3   
+2  Barbour County, Alabama   885.007619     24877       37.7  ...      11.7   
+3     Bibb County, Alabama   622.469286     22251       29.0  ...       7.5   
+4   Blount County, Alabama   644.890376     59077       22.9  ...       4.8   
+
+   EP_GROUPQ  EP_NOINT  EP_AFAM  EP_HISP  EP_ASIAN  EP_AIAN  EP_NHPI  \
+0        0.9      10.9     19.6      3.2       1.1      0.1      0.0   
+1        1.5      10.9      8.3      4.8       0.9      0.2      0.0   
+2       12.0      31.8     46.9      4.8       0.5      0.3      0.0   
+3        6.4      20.2     20.7      2.9       0.3      0.1      0.0   
+4        1.0      16.9      1.2      9.7       0.2      0.1      0.2   
+
+   EP_TWOMORE  EP_OTHERRACE  
+0         3.3           0.2  
+1         3.1           0.4  
+2         1.8           1.2  
+3         1.7           0.1  
+4         2.8           0.1  
+
+[5 rows x 33 columns]</code></pre>
+</div>
+</div>
 <p><strong>2. Create a table / dataframe that shows the number of missing values in each column. (Hint: if you wrote a function for Task 1, you can reuse it here.)</strong></p>
-<pre><code># your code here</code></pre>
+<div id="00b5fe4c" class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the number of missing values</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>missing_values <span class="op">=</span> svi_subset.isnull().<span class="bu">sum</span>()</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a DataFrame</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>missing_values_df <span class="op">=</span> missing_values.reset_index()</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>missing_values_df.columns <span class="op">=</span> [<span class="st">'Column'</span>, <span class="st">'Missing_Values'</span>]</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the table</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(missing_values_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>          Column  Missing_Values
+0             ST               0
+1          STATE               0
+2        ST_ABBR               0
+3         STCNTY               0
+4         COUNTY               0
+5           FIPS               0
+6       LOCATION               0
+7      AREA_SQMI               0
+8       E_TOTPOP               0
+9      EP_POV150               0
+10      EP_UNEMP               0
+11      EP_HBURD               0
+12     EP_NOHSDP               0
+13    EP_UNINSUR               0
+14      EP_AGE65               0
+15      EP_AGE17               0
+16     EP_DISABL               0
+17     EP_SNGPNT               0
+18     EP_LIMENG               0
+19     EP_MINRTY               0
+20      EP_MUNIT               0
+21     EP_MOBILE               0
+22      EP_CROWD               0
+23      EP_NOVEH               0
+24     EP_GROUPQ               0
+25      EP_NOINT               0
+26       EP_AFAM               0
+27       EP_HISP               0
+28      EP_ASIAN               0
+29       EP_AIAN               0
+30       EP_NHPI               0
+31    EP_TWOMORE               0
+32  EP_OTHERRACE               0</code></pre>
+</div>
+</div>
 </section>
 <section id="task-3---data-merging" class="level2">
 <h2 class="anchored" data-anchor-id="task-3---data-merging">Task 3 - Data Merging</h2>
 <p><strong>1. Identify any FIPS codes that are present in the NRI data but not in the SVI data and vice versa. Describe any discrepancies and possible causes? What to these discrepancies, if any, mean for interpreting results based on the merged dataset moving forward?</strong></p>
-<pre><code># your code here</code></pre>
-<p><strong>2. Merge the NRI and SVI data on the FIPS code. Use an outer join to keep all counties in the final dataset.</strong></p>
-<pre><code># your code here</code></pre>
+<div id="6e98c55f" class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Get the sets of FIPS codes</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>nri_fips <span class="op">=</span> <span class="bu">set</span>(nri_df[<span class="st">'STCOFIPS'</span>])</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>svi_fips <span class="op">=</span> <span class="bu">set</span>(svi_df[<span class="st">'FIPS'</span>])</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Identify discrepancies</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>nri_not_in_svi <span class="op">=</span> nri_fips <span class="op">-</span> svi_fips</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>svi_not_in_nri <span class="op">=</span> svi_fips <span class="op">-</span> nri_fips</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Display discrepancies</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"FIPS in NRI but not in SVI:"</span>, nri_not_in_svi)</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"FIPS in SVI but not in NRI:"</span>, svi_not_in_nri)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>FIPS in NRI but not in SVI: {'72103', '72133', '60020', '72025', '78020', '72105', '69110', '72117', '72143', '72101', '72151', '72129', '72009', '72147', '72145', '72097', '72039', '72055', '09009', '72007', '72089', '78010', '72019', '72057', '72093', '72045', '72049', '72069', '72061', '72123', '72003', '72021', '72135', '72031', '72001', '72013', '72023', '72005', '72059', '69100', '72131', '72041', '60010', '72029', '72087', '72077', '72015', '72054', '72083', '72063', '09013', '72065', '72033', '72139', '09015', '72113', '72047', '72067', '72053', '72075', '72071', '72149', '72073', '72027', '72091', '72125', '09003', '72085', '09007', '72035', '72109', '72081', '09005', '72079', '69120', '09011', '60050', '72111', '72095', '72121', '72043', '72037', '78030', '72119', '72115', '72137', '09001', '72153', '66010', '72099', '72017', '72107', '72141', '72011', '72127', '72051'}
+FIPS in SVI but not in NRI: {'09130', '09110', '09120', '09150', '09170', '09140', '09160', '09190', '09180'}</code></pre>
+</div>
+</div>
+<p>Possible cause: Data Collection Differences: The datasets may have been compiled using different criteria or timeframes, leading to discrepancies in coverage. _ _2. Merge the NRI and SVI data on the FIPS code. Use an outer join to keep all counties in the final dataset.__</p>
+<div id="135e4de1" class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Merge the datasets using an outer join</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>merged_data <span class="op">=</span> pd.merge(nri_df, svi_df, left_on<span class="op">=</span><span class="st">'STCOFIPS'</span>, right_on<span class="op">=</span><span class="st">'FIPS'</span>, how<span class="op">=</span><span class="st">'outer'</span>)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the first few rows of the merged dataset</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(merged_data.head())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   OID_  NRI_ID  STATE_x STATEABBRV  STATEFIPS COUNTY_x COUNTYTYPE  \
+0   1.0  C01001  Alabama         AL        1.0  Autauga     County   
+1   2.0  C01003  Alabama         AL        1.0  Baldwin     County   
+2   3.0  C01005  Alabama         AL        1.0  Barbour     County   
+3   4.0  C01007  Alabama         AL        1.0     Bibb     County   
+4   5.0  C01009  Alabama         AL        1.0   Blount     County   
+
+   COUNTYFIPS STCOFIPS  POPULATION  ...  EP_ASIAN  MP_ASIAN  EP_AIAN  MP_AIAN  \
+0         1.0    01001     58764.0  ...       1.1       0.4      0.1      0.1   
+1         3.0    01003    231365.0  ...       0.9       0.1      0.2      0.1   
+2         5.0    01005     25160.0  ...       0.5       0.1      0.3      0.1   
+3         7.0    01007     22239.0  ...       0.3       0.4      0.1      0.1   
+4         9.0    01009     58992.0  ...       0.2       0.2      0.1      0.1   
+
+   EP_NHPI MP_NHPI  EP_TWOMORE  MP_TWOMORE EP_OTHERRACE  MP_OTHERRACE  
+0      0.0     0.1         3.3         1.0          0.2           0.3  
+1      0.0     0.1         3.1         0.4          0.4           0.3  
+2      0.0     0.1         1.8         0.7          1.2           0.8  
+3      0.0     0.2         1.7         1.0          0.1           0.1  
+4      0.2     0.2         2.8         0.7          0.1           0.1  
+
+[5 rows x 624 columns]</code></pre>
+</div>
+</div>
 <p><strong>3. Create a table / dataframe that shows the number of missing values in each column of the merged dataset.</strong></p>
-<pre><code># your code here</code></pre>
+<div id="a09ab2b7" class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the number of missing values in each column</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>missing_values_merged <span class="op">=</span> merged_data.isnull().<span class="bu">sum</span>()</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a DataFrame to display the missing values</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>missing_values_merged_df <span class="op">=</span> missing_values_merged.reset_index()</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>missing_values_merged_df.columns <span class="op">=</span> [<span class="st">'Column'</span>, <span class="st">'Missing_Values'</span>]</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the table</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(missing_values_merged_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>           Column  Missing_Values
+0            OID_               9
+1          NRI_ID               9
+2         STATE_x               9
+3      STATEABBRV               9
+4       STATEFIPS               9
+..            ...             ...
+619       MP_NHPI              96
+620    EP_TWOMORE              96
+621    MP_TWOMORE              96
+622  EP_OTHERRACE              96
+623  MP_OTHERRACE              96
+
+[624 rows x 2 columns]</code></pre>
+</div>
+</div>
 </section>
 <section id="task-4---data-analysis" class="level2">
 <h2 class="anchored" data-anchor-id="task-4---data-analysis">Task 4 - Data Analysis</h2>
 <p><strong>1. For each numerical variable in the merged dataset, plot a histogram showing the distribution of values. (Hint: write a function to make the histogram for a single variable, then use a loop or apply function to make the histograms for all numerical variables.)</strong></p>
-<pre><code># your code here</code></pre>
+<div id="ee0af0e0" class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Function to plot a histogram for a single variable</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_histogram(column):</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    plt.figure(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">6</span>))</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    plt.hist(merged_data[column].dropna(), bins<span class="op">=</span><span class="dv">30</span>, edgecolor<span class="op">=</span><span class="st">'k'</span>, alpha<span class="op">=</span><span class="fl">0.7</span>)</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>    plt.title(<span class="ss">f'Distribution of </span><span class="sc">{</span>column<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>    plt.xlabel(column)</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>    plt.ylabel(<span class="st">'Frequency'</span>)</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>    plt.grid(<span class="va">True</span>)</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>    plt.show()</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Identify numerical columns</span></span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>numerical_columns <span class="op">=</span> merged_data.select_dtypes(include<span class="op">=</span>[<span class="st">'number'</span>]).columns</span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot histograms for each numerical variable</span></span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> column <span class="kw">in</span> numerical_columns:</span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>    plot_histogram(column)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-1.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-2.png" width="668" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-3.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-4.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-5.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-6.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-7.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-8.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-9.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-10.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-11.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-12.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-13.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-14.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-15.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-16.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-17.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-18.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-19.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-20.png" width="680" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-21.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-22.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-23.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-24.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-25.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-26.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-27.png" width="668" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-28.png" width="668" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-29.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-30.png" width="683" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-31.png" width="668" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-32.png" width="668" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-33.png" width="668" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-34.png" width="668" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-35.png" width="668" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-36.png" width="675" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-37.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-38.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-39.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-40.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-41.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-42.png" width="659" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-43.png" width="668" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-44.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-45.png" width="651" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-46.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-47.png" width="651" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-48.png" width="683" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-49.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-50.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-51.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-52.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-53.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-54.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-55.png" width="668" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-56.png" width="688" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-57.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-58.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-59.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-60.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-61.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-62.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-63.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-64.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-65.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-66.png" width="659" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-67.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-68.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-69.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-70.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-71.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-72.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-73.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-74.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-75.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-76.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-77.png" width="690" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-78.png" width="688" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-79.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-80.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-81.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-82.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-83.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-84.png" width="681" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-85.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-86.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-87.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-88.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-89.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-90.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-91.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-92.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-93.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-94.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-95.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-96.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-97.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-98.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-99.png" width="681" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-100.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-101.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-102.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-103.png" width="683" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-104.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-105.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-106.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-107.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-108.png" width="677" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-109.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-110.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-111.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-112.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-113.png" width="680" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-114.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-115.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-116.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-117.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-118.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-119.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-120.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-121.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-122.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-123.png" width="668" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-124.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-125.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-126.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-127.png" width="678" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-128.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-129.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-130.png" width="692" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-131.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-132.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-133.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-134.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-135.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-136.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-137.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-138.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-139.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-140.png" width="683" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-141.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-142.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-143.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-144.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-145.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-146.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-147.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-148.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-149.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-150.png" width="678" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-151.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-152.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-153.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-154.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-155.png" width="677" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-156.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-157.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-158.png" width="678" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-159.png" width="685" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-160.png" width="678" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-161.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-162.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-163.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-164.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-165.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-166.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-167.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-168.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-169.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-170.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-171.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-172.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-173.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-174.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-175.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-176.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-177.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-178.png" width="671" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-179.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-180.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-181.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-182.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-183.png" width="681" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-184.png" width="659" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-185.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-186.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-187.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-188.png" width="659" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-189.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-190.png" width="659" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-191.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-192.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-193.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-194.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-195.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-196.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-197.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-198.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-199.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-200.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-201.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-202.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-203.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-204.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-205.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-206.png" width="681" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-207.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-208.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-209.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-210.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-211.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-212.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-213.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-214.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-215.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-216.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-217.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-218.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-219.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-220.png" width="682" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-221.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-222.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-223.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-224.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-225.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-226.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-227.png" width="679" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-228.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-229.png" width="668" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-230.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-231.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-232.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-233.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-234.png" width="678" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-235.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-236.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-237.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-238.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-239.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-240.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-241.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-242.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-243.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-244.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-245.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-246.png" width="683" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-247.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-248.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-249.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-250.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-251.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-252.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-253.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-254.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-255.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-256.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-257.png" width="702" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-258.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-259.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-260.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-261.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-262.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-263.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-264.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-265.png" width="677" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-266.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-267.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-268.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-269.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-270.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-271.png" width="668" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-272.png" width="668" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-273.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-274.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-275.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-276.png" width="678" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-277.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-278.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-279.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-280.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-281.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-282.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-283.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-284.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-285.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-286.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-287.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-288.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-289.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-290.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-291.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-292.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-293.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-294.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-295.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-296.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-297.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-298.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-299.png" width="678" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-300.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-301.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-302.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-303.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-304.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-305.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-306.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-307.png" width="681" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-308.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-309.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-310.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-311.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-312.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-313.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-314.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-315.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-316.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-317.png" width="659" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-318.png" width="685" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-319.png" width="659" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-320.png" width="666" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-321.png" width="678" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-322.png" width="659" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-323.png" width="659" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-324.png" width="660" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-325.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-326.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-327.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-328.png" width="673" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-329.png" width="675" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-330.png" width="659" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-331.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-332.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-333.png" width="659" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-334.png" width="659" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-335.png" width="659" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-336.png" width="659" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-337.png" width="686" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-338.png" width="659" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-339.png" width="659" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-340.png" width="659" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-341.png" width="659" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-342.png" width="659" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-343.png" width="662" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-344.png" width="683" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-345.png" width="659" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-346.png" width="659" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-347.png" width="659" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-348.png" width="662" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-349.png" width="659" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-350.png" width="659" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-351.png" width="659" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-352.png" width="659" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-353.png" width="659" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-354.png" width="659" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-355.png" width="683" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-356.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-357.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-358.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-359.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-360.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-361.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-362.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-363.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-364.png" width="696" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-365.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-366.png" width="686" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-367.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-368.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-369.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-370.png" width="685" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-371.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-372.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-373.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-374.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-375.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-376.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-377.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-378.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-379.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-380.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-381.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-382.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-383.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-384.png" width="679" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-385.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-386.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-387.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-388.png" width="685" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-389.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-390.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-391.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-392.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-393.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-394.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-395.png" width="681" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-396.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-397.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-398.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-399.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-400.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-401.png" width="668" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-402.png" width="668" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-403.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-404.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-405.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-406.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-407.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-408.png" width="682" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-409.png" width="687" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-410.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-411.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-412.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-413.png" width="685" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-414.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-415.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-416.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-417.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-418.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-419.png" width="678" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-420.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-421.png" width="668" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-422.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-423.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-424.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-425.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-426.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-427.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-428.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-429.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-430.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-431.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-432.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-433.png" width="682" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-434.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-435.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-436.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-437.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-438.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-439.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-440.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-441.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-442.png" width="668" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-443.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-444.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-445.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-446.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-447.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-448.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-449.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-450.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-451.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-452.png" width="669" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-453.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-454.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-455.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-456.png" width="668" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-457.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-458.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-459.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-460.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-461.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-462.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-463.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-464.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-465.png" width="682" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-466.png" width="668" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-467.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-468.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-469.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-470.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-471.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-472.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-473.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-474.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-475.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-476.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-477.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-478.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-479.png" width="668" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-480.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-481.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-482.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-483.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-484.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-485.png" width="668" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-486.png" width="668" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-487.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-488.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-489.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-490.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-491.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-492.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-493.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-494.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-495.png" width="668" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-496.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-497.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-498.png" width="668" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-499.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-500.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-501.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-502.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-503.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-504.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-505.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-506.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-507.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-508.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-509.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-510.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-511.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-512.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-513.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-514.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-515.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-516.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-517.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-518.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-519.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-520.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-521.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-522.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-523.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-524.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-525.png" width="677" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-526.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-527.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-528.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-529.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-530.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-531.png" width="677" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-532.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-533.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-534.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-535.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-536.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-537.png" width="687" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-538.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-539.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-540.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-541.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-542.png" width="680" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-543.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-544.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-545.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-546.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-547.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-548.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-549.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-550.png" width="667" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-551.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-552.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="HW_02_files/figure-html/cell-12-output-553.png" width="676" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
 </section>
 
 </main>
