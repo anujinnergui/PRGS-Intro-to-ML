@@ -175,7 +175,7 @@ print(missing_values_merged_df)
 ## Task 4 - Data Analysis
 
 __1. For each numerical variable in the merged dataset, plot a histogram showing the distribution of values.
-(Hint: write a function to make the histogram for a single variable, then use a loop or apply function to make the histograms for all numerical variables.)__
+(Hint: write a function to make the histogram for a single variable, then use a loop or apply function to make the histograms
 
 ```{python}
 
