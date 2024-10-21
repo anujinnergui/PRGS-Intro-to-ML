@@ -113,7 +113,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="task-1---nri-data-cleaning" class="level2">
 <h2 class="anchored" data-anchor-id="task-1---nri-data-cleaning">Task 1 - NRI Data Cleaning</h2>
 <p><strong>1. Import the NRI data. Ensure that the <a href="https://en.wikipedia.org/wiki/Federal_Information_Processing_Standard_state_code">FIPS code</a> variable (‘STCOFIPS’) is correctly identified as a string / character variable. Otherwise, the leading zeros will be removed.</strong></p>
-<div id="5d9f1717" class="cell" data-execution_count="1">
+<div id="93565429" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>nri_data_path <span class="op">=</span> <span class="vs">r'C:\Users\anergui\OneDrive - RAND Corporation\Fall 2024\Intro to ML\Code\PRGS-Intro-to-ML\data\raw\NRI_Table_Counties.csv'</span>  </span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -155,7 +155,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p><strong>2. Subset the NRI data to include only the 5-digit state/county FIPS code and all colums ending with ‘_AFREQ’ and ‘_RISKR’. Each of these columns represents a different hazard type.</strong></p>
-<div id="ec006348" class="cell" data-execution_count="2">
+<div id="26bf34c1" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine the selected columns and include 'STCOFIPS'</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>subset_columns <span class="op">=</span> [<span class="st">'STCOFIPS'</span>] <span class="op">+</span> [col <span class="cf">for</span> col <span class="kw">in</span> nri_df.columns <span class="cf">if</span> col.endswith(<span class="st">'_AFREQ'</span>) <span class="kw">or</span> col.endswith(<span class="st">'_RISKR'</span>)] </span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Subset the dataframe</span></span>
@@ -196,7 +196,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p><strong>3. Create a table / dataframe that, for each hazard type, shows the number of missing values in the ‘_AFREQ’ and ‘_RISKR’ columns.</strong></p>
-<div id="8f38727c" class="cell" data-execution_count="3">
+<div id="0e3d79be" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the number of missing values</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>missing_values <span class="op">=</span> nri_subset.isnull().<span class="bu">sum</span>()</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -250,7 +250,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p><strong>4. Create a new column in the original data table indicating whether or not ‘AVLN_AFREQ’ is missing or observed. Show the cross-tabulation of the ‘AVLN_AFREQ’ missingness and ‘AVLN_RISKR’ columns (including missing values). What do you observe?</strong></p>
-<div id="d1d8e55a" class="cell" data-execution_count="4">
+<div id="57adc948" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a new column for AVLN_AFREQ missingness</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>nri_df[<span class="st">'AVLN_AFREQ_Missing'</span>] <span class="op">=</span> nri_df[<span class="st">'AVLN_AFREQ'</span>].isnull()</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -273,7 +273,7 @@ True                                  0          0         0  </code></pre>
 </div>
 <p>We observe that when fequency increases risk level decreases.</p>
 <p><strong>5. Assuming that a risk that is “not applicable” to a county has an annualized frequency of 0, impute the relevant missing values in the ‘_AFREQ’ columns with 0.</strong></p>
-<div id="5866840a" class="cell" data-execution_count="5">
+<div id="d91eecd8" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Identify '_AFREQ' columns</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>afreq_columns <span class="op">=</span> [col <span class="cf">for</span> col <span class="kw">in</span> nri_df.columns <span class="cf">if</span> col.endswith(<span class="st">'_AFREQ'</span>)]</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -309,7 +309,7 @@ True                                  0          0         0  </code></pre>
 <section id="task-2---svi-data-cleaning" class="level2">
 <h2 class="anchored" data-anchor-id="task-2---svi-data-cleaning">Task 2 - SVI Data Cleaning</h2>
 <p><strong>1. Import the SVI data. Ensure that the FIPS code is correctly identified as a string / character variable. Otherwise, the leading zeros will be removed.</strong> <strong>1. Subset the SVI data to include only the following columns:</strong> <code>ST, STATE, ST_ABBR, STCNTY, COUNTY, FIPS, LOCATION, AREA_SQMI, E_TOTPOP, EP_POV150, EP_UNEMP, EP_HBURD, EP_NOHSDP, EP_UNINSUR, EP_AGE65, EP_AGE17, EP_DISABL, EP_SNGPNT, EP_LIMENG, EP_MINRTY, EP_MUNIT, EP_MOBILE, EP_CROWD, EP_NOVEH, EP_GROUPQ, EP_NOINT, EP_AFAM, EP_HISP, EP_ASIAN, EP_AIAN, EP_NHPI, EP_TWOMORE, EP_OTHERRACE</code></p>
-<div id="6aca4cbc" class="cell" data-execution_count="6">
+<div id="d71fe7d7" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>svi_path <span class="op">=</span> <span class="vs">r'C:\Users\anergui\OneDrive - RAND Corporation\Fall 2024\Intro to ML\Code\PRGS-Intro-to-ML\data\raw\SVI_2022_US_county.csv'</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the SVI data</span></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -362,7 +362,7 @@ True                                  0          0         0  </code></pre>
 </div>
 </div>
 <p><strong>2. Create a table / dataframe that shows the number of missing values in each column. (Hint: if you wrote a function for Task 1, you can reuse it here.)</strong></p>
-<div id="00b5fe4c" class="cell" data-execution_count="7">
+<div id="b8280e63" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the number of missing values</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>missing_values <span class="op">=</span> svi_subset.isnull().<span class="bu">sum</span>()</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -413,7 +413,7 @@ True                                  0          0         0  </code></pre>
 <section id="task-3---data-merging" class="level2">
 <h2 class="anchored" data-anchor-id="task-3---data-merging">Task 3 - Data Merging</h2>
 <p><strong>1. Identify any FIPS codes that are present in the NRI data but not in the SVI data and vice versa. Describe any discrepancies and possible causes? What to these discrepancies, if any, mean for interpreting results based on the merged dataset moving forward?</strong></p>
-<div id="6e98c55f" class="cell" data-execution_count="8">
+<div id="f16bfaf5" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Get the sets of FIPS codes</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>nri_fips <span class="op">=</span> <span class="bu">set</span>(nri_df[<span class="st">'STCOFIPS'</span>])</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>svi_fips <span class="op">=</span> <span class="bu">set</span>(svi_df[<span class="st">'FIPS'</span>])</span>
@@ -426,12 +426,12 @@ True                                  0          0         0  </code></pre>
 <span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"FIPS in NRI but not in SVI:"</span>, nri_not_in_svi)</span>
 <span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"FIPS in SVI but not in NRI:"</span>, svi_not_in_nri)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>FIPS in NRI but not in SVI: {'72103', '72133', '60020', '72025', '78020', '72105', '69110', '72117', '72143', '72101', '72151', '72129', '72009', '72147', '72145', '72097', '72039', '72055', '09009', '72007', '72089', '78010', '72019', '72057', '72093', '72045', '72049', '72069', '72061', '72123', '72003', '72021', '72135', '72031', '72001', '72013', '72023', '72005', '72059', '69100', '72131', '72041', '60010', '72029', '72087', '72077', '72015', '72054', '72083', '72063', '09013', '72065', '72033', '72139', '09015', '72113', '72047', '72067', '72053', '72075', '72071', '72149', '72073', '72027', '72091', '72125', '09003', '72085', '09007', '72035', '72109', '72081', '09005', '72079', '69120', '09011', '60050', '72111', '72095', '72121', '72043', '72037', '78030', '72119', '72115', '72137', '09001', '72153', '66010', '72099', '72017', '72107', '72141', '72011', '72127', '72051'}
-FIPS in SVI but not in NRI: {'09130', '09110', '09120', '09150', '09170', '09140', '09160', '09190', '09180'}</code></pre>
+<pre><code>FIPS in NRI but not in SVI: {'66010', '72055', '72021', '72091', '72069', '72019', '72085', '78020', '72025', '09005', '72051', '72151', '72059', '72061', '72015', '09001', '72049', '72047', '72119', '72145', '72031', '09011', '72057', '72013', '78010', '72133', '72077', '72139', '72043', '60020', '09013', '72107', '72033', '72071', '72005', '72115', '72023', '72125', '72149', '72089', '72039', '72137', '72135', '72029', '72095', '72153', '72103', '72035', '09015', '78030', '69100', '72117', '09007', '72067', '72093', '72081', '72147', '69110', '09003', '72053', '72129', '72063', '72123', '72041', '72121', '72009', '72109', '72143', '72113', '72097', '72001', '72027', '72003', '72131', '72079', '72105', '72075', '72045', '72065', '72037', '60050', '72101', '72017', '72127', '72087', '72054', '72073', '69120', '72111', '09009', '60010', '72011', '72141', '72007', '72083', '72099'}
+FIPS in SVI but not in NRI: {'09140', '09190', '09180', '09130', '09170', '09110', '09120', '09160', '09150'}</code></pre>
 </div>
 </div>
 <p>Possible cause: Data Collection Differences: The datasets may have been compiled using different criteria or timeframes, leading to discrepancies in coverage. _ _2. Merge the NRI and SVI data on the FIPS code. Use an outer join to keep all counties in the final dataset.__</p>
-<div id="135e4de1" class="cell" data-execution_count="9">
+<div id="bbb36f3d" class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Merge the datasets using an outer join</span></span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>merged_data <span class="op">=</span> pd.merge(nri_df, svi_df, left_on<span class="op">=</span><span class="st">'STCOFIPS'</span>, right_on<span class="op">=</span><span class="st">'FIPS'</span>, how<span class="op">=</span><span class="st">'outer'</span>)</span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -463,7 +463,7 @@ FIPS in SVI but not in NRI: {'09130', '09110', '09120', '09150', '09170', '09140
 </div>
 </div>
 <p><strong>3. Create a table / dataframe that shows the number of missing values in each column of the merged dataset.</strong></p>
-<div id="a09ab2b7" class="cell" data-execution_count="10">
+<div id="2540a627" class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the number of missing values in each column</span></span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>missing_values_merged <span class="op">=</span> merged_data.isnull().<span class="bu">sum</span>()</span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -494,7 +494,7 @@ FIPS in SVI but not in NRI: {'09130', '09110', '09120', '09150', '09170', '09140
 <section id="task-4---data-analysis" class="level2">
 <h2 class="anchored" data-anchor-id="task-4---data-analysis">Task 4 - Data Analysis</h2>
 <p><strong>1. For each numerical variable in the merged dataset, plot a histogram showing the distribution of values. (Hint: write a function to make the histogram for a single variable, then use a loop or apply function to make the histograms for all numerical variables.)</strong></p>
-<div id="ee0af0e0" class="cell" data-execution_count="11">
+<div id="a6fa26ea" class="cell" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Function to plot a histogram for a single variable</span></span>
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_histogram(column):</span>
